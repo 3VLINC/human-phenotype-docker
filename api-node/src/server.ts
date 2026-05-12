@@ -1,17 +1,19 @@
-"use strict";
+import fs from "node:fs";
+import express, { type Request, type Response } from "express";
+import swaggerUi from "swagger-ui-express";
+import {
+  getAncestors,
+  getDescendants,
+  parseObo,
+  type OntologyData,
+} from "./obo-parser";
 
-const fs = require("fs");
-const path = require("path");
-const express = require("express");
-const swaggerUi = require("swagger-ui-express");
-const { parseObo, getAncestors, getDescendants } = require("./obo-parser");
+const HPO_OBO_PATH = process.env.HPO_OBO_PATH ?? "/data/hp.obo";
+const PORT = parseInt(process.env.PORT ?? "8000", 10);
 
-const HPO_OBO_PATH = process.env.HPO_OBO_PATH || "/data/hp.obo";
-const PORT = parseInt(process.env.PORT || "8000", 10);
+let ontology: OntologyData;
 
-let ontology = null;
-
-function loadOntology() {
+function loadOntology(): void {
   if (!fs.existsSync(HPO_OBO_PATH)) {
     console.error(`Ontology file not found: ${HPO_OBO_PATH}`);
     console.error("Mount your .obo file into the container at /data/hp.obo");
@@ -30,7 +32,7 @@ function loadOntology() {
 
 const app = express();
 
-const openApiSpec = {
+const openApiSpec: Record<string, unknown> = {
   openapi: "3.1.0",
   info: {
     title: "HPO API",
@@ -136,16 +138,16 @@ const openApiSpec = {
 
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(openApiSpec));
 
-app.get("/api/ontology", (_req, res) => {
+app.get("/api/ontology", (_req: Request, res: Response) => {
   res.json({
     name: "Human Phenotype Ontology",
-    data_version: ontology.header.dataVersion || null,
+    data_version: ontology.header.dataVersion ?? null,
     term_count: ontology.terms.size,
   });
 });
 
-app.get("/api/terms/:termId", (req, res) => {
-  const term = ontology.terms.get(req.params.termId);
+app.get("/api/terms/:termId", (req: Request, res: Response) => {
+  const term = ontology.terms.get(req.params.termId ?? "");
   if (!term) {
     return res
       .status(404)
@@ -178,8 +180,8 @@ app.get("/api/terms/:termId", (req, res) => {
   });
 });
 
-app.get("/api/terms/:termId/parents", (req, res) => {
-  const term = ontology.terms.get(req.params.termId);
+app.get("/api/terms/:termId/parents", (req: Request, res: Response) => {
+  const term = ontology.terms.get(req.params.termId ?? "");
   if (!term) {
     return res
       .status(404)
@@ -187,7 +189,7 @@ app.get("/api/terms/:termId/parents", (req, res) => {
   }
 
   const distance = Math.min(
-    Math.max(parseInt(req.query.distance || "1", 10) || 1, 1),
+    Math.max(parseInt(String(req.query.distance ?? "1"), 10) || 1, 1),
     50
   );
   const parents = getAncestors(
@@ -199,8 +201,8 @@ app.get("/api/terms/:termId/parents", (req, res) => {
   res.json(parents);
 });
 
-app.get("/api/terms/:termId/children", (req, res) => {
-  const term = ontology.terms.get(req.params.termId);
+app.get("/api/terms/:termId/children", (req: Request, res: Response) => {
+  const term = ontology.terms.get(req.params.termId ?? "");
   if (!term) {
     return res
       .status(404)
@@ -208,7 +210,7 @@ app.get("/api/terms/:termId/children", (req, res) => {
   }
 
   const distance = Math.min(
-    Math.max(parseInt(req.query.distance || "1", 10) || 1, 1),
+    Math.max(parseInt(String(req.query.distance ?? "1"), 10) || 1, 1),
     50
   );
   const children = getDescendants(
@@ -220,18 +222,23 @@ app.get("/api/terms/:termId/children", (req, res) => {
   res.json(children);
 });
 
-app.get("/api/search", (req, res) => {
+app.get("/api/search", (req: Request, res: Response) => {
   const q = req.query.q;
-  if (!q) {
+  if (q === undefined || q === "") {
+    return res.status(400).json({ detail: "Query parameter 'q' is required" });
+  }
+
+  const qStr = Array.isArray(q) ? q[0] : q;
+  if (typeof qStr !== "string" || qStr.length === 0) {
     return res.status(400).json({ detail: "Query parameter 'q' is required" });
   }
 
   const limit = Math.min(
-    Math.max(parseInt(req.query.limit || "20", 10) || 20, 1),
+    Math.max(parseInt(String(req.query.limit ?? "20"), 10) || 20, 1),
     100
   );
-  const queryLower = q.toLowerCase();
-  const results = [];
+  const queryLower = qStr.toLowerCase();
+  const results: { id: string; name: string | null }[] = [];
 
   for (const term of ontology.terms.values()) {
     if (term.isObsolete) continue;
@@ -256,14 +263,14 @@ app.get("/api/search", (req, res) => {
     }
   }
 
-  res.json({ query: q, count: results.length, terms: results });
+  res.json({ query: qStr, count: results.length, terms: results });
 });
 
-app.get("/health", (_req, res) => {
+app.get("/health", (_req: Request, res: Response) => {
   res.json({
     status: "ok",
-    ontology_loaded: ontology !== null,
-    term_count: ontology ? ontology.terms.size : 0,
+    ontology_loaded: true,
+    term_count: ontology.terms.size,
   });
 });
 

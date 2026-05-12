@@ -1,13 +1,45 @@
-"use strict";
+export interface TermSynonym {
+  text: string;
+  scope: string;
+}
 
-function parseObo(text) {
-  const header = {};
-  const terms = new Map();
-  const childrenMap = new Map();
-  const parentMap = new Map();
+/** Internal term shape including parent IDs before graph is built */
+export interface ParsedTerm {
+  id: string;
+  name: string | null;
+  definition: string | null;
+  comment: string | null;
+  synonyms: TermSynonym[];
+  xrefs: string[];
+  isObsolete: boolean;
+  _parentIds: string[];
+}
+
+export interface OntologyHeader {
+  dataVersion?: string;
+  ontology?: string;
+}
+
+export interface OntologyData {
+  header: OntologyHeader;
+  terms: Map<string, ParsedTerm>;
+  childrenMap: Map<string, string[]>;
+  parentMap: Map<string, string[]>;
+}
+
+export interface TermSummary {
+  id: string;
+  name: string | null;
+}
+
+export function parseObo(text: string): OntologyData {
+  const header: OntologyHeader = {};
+  const terms = new Map<string, ParsedTerm>();
+  const childrenMap = new Map<string, string[]>();
+  const parentMap = new Map<string, string[]>();
 
   const blocks = text.split(/\n(?=\[)/);
-  const headerBlock = blocks[0];
+  const headerBlock = blocks[0] ?? "";
 
   for (const line of headerBlock.split("\n")) {
     const match = line.match(/^([\w-]+):\s*(.+)/);
@@ -20,7 +52,7 @@ function parseObo(text) {
 
   for (let i = 1; i < blocks.length; i++) {
     const block = blocks[i];
-    if (!block.startsWith("[Term]")) continue;
+    if (!block?.startsWith("[Term]")) continue;
 
     const term = parseTerm(block);
     if (!term) continue;
@@ -32,24 +64,24 @@ function parseObo(text) {
 
     for (const parentId of term._parentIds) {
       if (!childrenMap.has(parentId)) childrenMap.set(parentId, []);
-      childrenMap.get(parentId).push(term.id);
+      childrenMap.get(parentId)!.push(term.id);
 
-      parentMap.get(term.id).push(parentId);
+      parentMap.get(term.id)!.push(parentId);
     }
   }
 
   return { header, terms, childrenMap, parentMap };
 }
 
-function parseTerm(block) {
+function parseTerm(block: string): ParsedTerm | null {
   const lines = block.split("\n");
-  let id = null;
-  let name = null;
-  let definition = null;
-  let comment = null;
-  const synonyms = [];
-  const xrefs = [];
-  const parentIds = [];
+  let id: string | null = null;
+  let name: string | null = null;
+  let definition: string | null = null;
+  let comment: string | null = null;
+  const synonyms: TermSynonym[] = [];
+  const xrefs: string[] = [];
+  const parentIds: string[] = [];
   let isObsolete = false;
 
   for (const line of lines) {
@@ -96,15 +128,20 @@ function parseTerm(block) {
   };
 }
 
-function getAncestors(terms, parentMap, termId, distance) {
-  const result = [];
-  const visited = new Set([termId]);
-  let frontier = [termId];
+export function getAncestors(
+  terms: Map<string, ParsedTerm>,
+  parentMap: Map<string, string[]>,
+  termId: string,
+  distance: number
+): TermSummary[] {
+  const result: TermSummary[] = [];
+  const visited = new Set<string>([termId]);
+  let frontier: string[] = [termId];
 
   for (let d = 0; d < distance && frontier.length > 0; d++) {
-    const next = [];
+    const next: string[] = [];
     for (const current of frontier) {
-      const parents = parentMap.get(current) || [];
+      const parents = parentMap.get(current) ?? [];
       for (const pid of parents) {
         if (!visited.has(pid)) {
           visited.add(pid);
@@ -120,15 +157,20 @@ function getAncestors(terms, parentMap, termId, distance) {
   return result;
 }
 
-function getDescendants(terms, childrenMap, termId, distance) {
-  const result = [];
-  const visited = new Set([termId]);
-  let frontier = [termId];
+export function getDescendants(
+  terms: Map<string, ParsedTerm>,
+  childrenMap: Map<string, string[]>,
+  termId: string,
+  distance: number
+): TermSummary[] {
+  const result: TermSummary[] = [];
+  const visited = new Set<string>([termId]);
+  let frontier: string[] = [termId];
 
   for (let d = 0; d < distance && frontier.length > 0; d++) {
-    const next = [];
+    const next: string[] = [];
     for (const current of frontier) {
-      const children = childrenMap.get(current) || [];
+      const children = childrenMap.get(current) ?? [];
       for (const cid of children) {
         if (!visited.has(cid)) {
           visited.add(cid);
@@ -143,5 +185,3 @@ function getDescendants(terms, childrenMap, termId, distance) {
 
   return result;
 }
-
-module.exports = { parseObo, getAncestors, getDescendants };

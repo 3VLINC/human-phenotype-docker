@@ -46,7 +46,7 @@ A containerized REST API for querying the Human Phenotype Ontology. Two server i
 | Implementation | Dockerfile | Base image | Ontology parser |
 |---------------|------------|------------|-----------------|
 | **Python** (FastAPI) | `Dockerfile` | `python:3.12-slim` | [pronto](https://github.com/althonos/pronto) |
-| **Node.js** (Express) | `Dockerfile.node` | `node:22-slim` | custom OBO parser |
+| **Node.js** (Express, TypeScript → `dist/`) | `Dockerfile.node` | `node:22-slim` | custom OBO parser |
 
 Both expose the same endpoints on port **8000**:
 
@@ -73,6 +73,19 @@ docker compose --profile node up
 ```
 
 Add `-d` to run in the background, `--build` to force a rebuild.
+
+### Developing the Node.js API locally
+
+The Node server is written in **TypeScript** under `api-node/src/`. It compiles to JavaScript in `api-node/dist/` (ignored by git).
+
+```bash
+cd api-node
+npm ci
+npm run build
+HPO_OBO_PATH=/path/to/hp.obo npm start
+```
+
+Use `npm run dev` to run `tsc --watch` while editing.
 
 ## Building images manually
 
