@@ -157,4 +157,6 @@ src/ontology/reports/hpodiff_hp_2024-06-25_to_hp_2024-06-28.xlsx
 
 venv
 node_modules/
-api-node/dist/
+.turbo/
+packages/.turbo/
+packages/*/dist/

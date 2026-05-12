@@ -76,16 +76,27 @@ Add `-d` to run in the background, `--build` to force a rebuild.
 
 ### Developing the Node.js API locally
 
-The Node server is written in **TypeScript** under `api-node/src/`. It compiles to JavaScript in `api-node/dist/` (ignored by git).
+The Node server lives in a **Turborepo** at the repo root ([`package.json`](package.json), [`turbo.json`](turbo.json)) with workspaces under [`packages/`](packages/): `@threevl/hpo-lib` (parser + resolvers), `@threevl/hpo-express` (Express router), and `@threevl/hpo-api` (standalone server). Build output is under `packages/*/dist/` (ignored by git).
 
 ```bash
-cd api-node
 npm ci
 npm run build
 HPO_OBO_PATH=/path/to/hp.obo npm start
 ```
 
-Use `npm run dev` to run `tsc --watch` while editing.
+Use `npm run dev` at the repo root to run `tsc --watch` in all workspaces via Turbo.
+
+### Publishing `@threevl/*` packages to npm
+
+Bump the `version` field in each of `packages/hpo-lib/package.json`, `packages/hpo-express/package.json`, and `packages/hpo-api/package.json` as needed, then:
+
+```bash
+npm ci
+npm run publish:dry   # optional: inspect tarballs without uploading
+npm run publish       # requires `npm login` and publish rights for the @threevl scope
+```
+
+In GitHub: add an **`NPM_TOKEN`** repository secret (automation token with publish access to `@threevl`), then run the **Publish npm packages** workflow from the Actions tab.
 
 ## Building images manually
 

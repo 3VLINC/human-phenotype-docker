@@ -1,0 +1,41 @@
+# Publishes @threevl/hpo-lib, @threevl/hpo-express, and @threevl/hpo-api to npm.
+# Requires repository secret NPM_TOKEN (npm automation token with publish access to @threevl).
+name: Publish npm packages
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          registry-url: "https://registry.npmjs.org"
+          cache: "npm"
+
+      - name: Install and build
+        run: |
+          npm ci
+          npm run build
+
+      - name: Publish @threevl/hpo-lib
+        run: npm publish -w @threevl/hpo-lib --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish @threevl/hpo-express
+        run: npm publish -w @threevl/hpo-express --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish @threevl/hpo-api
+        run: npm publish -w @threevl/hpo-api --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

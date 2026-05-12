@@ -2,24 +2,38 @@ FROM node:22-slim AS builder
 
 WORKDIR /app
 
-COPY api-node/package.json api-node/package-lock.json* ./
+COPY package.json package-lock.json ./
+COPY turbo.json ./
+COPY packages/tsconfig.base.json ./packages/tsconfig.base.json
+COPY packages/hpo-lib/package.json ./packages/hpo-lib/
+COPY packages/hpo-express/package.json ./packages/hpo-express/
+COPY packages/hpo-api/package.json ./packages/hpo-api/
+
 RUN npm ci
 
-COPY api-node/tsconfig.json ./
-COPY api-node/src ./src
+COPY packages/hpo-lib ./packages/hpo-lib
+COPY packages/hpo-express ./packages/hpo-express
+COPY packages/hpo-api ./packages/hpo-api
+
 RUN npm run build
 
 FROM node:22-slim
 
 WORKDIR /app
 
-COPY api-node/package.json api-node/package-lock.json* ./
+COPY package.json package-lock.json ./
+COPY packages/hpo-lib/package.json ./packages/hpo-lib/
+COPY packages/hpo-express/package.json ./packages/hpo-express/
+COPY packages/hpo-api/package.json ./packages/hpo-api/
+
 RUN npm ci --omit=dev
 
-COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/packages/hpo-lib/dist ./packages/hpo-lib/dist
+COPY --from=builder /app/packages/hpo-express/dist ./packages/hpo-express/dist
+COPY --from=builder /app/packages/hpo-api/dist ./packages/hpo-api/dist
 
 RUN mkdir -p /data
 
 EXPOSE 8000
 
-CMD ["node", "dist/server.js"]
+CMD ["node", "packages/hpo-api/dist/index.js"]
