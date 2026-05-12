@@ -1,0 +1,11 @@
+services:
+  hpo-api:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./hp.obo:/data/hp.obo:ro
+      - ./hp-base.owl:/data/hp.owl:ro
+    environment:
+      - HPO_OBO_PATH=/data/hp.obo
+      - HPO_OWL_PATH=/data/hp.owl
