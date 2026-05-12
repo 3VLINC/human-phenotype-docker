@@ -1,0 +1,13 @@
+{
+  "name": "hpo-api",
+  "version": "1.0.0",
+  "description": "REST API for querying the Human Phenotype Ontology",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.0",
+    "swagger-ui-express": "^5.0.0"
+  }
+}

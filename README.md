@@ -39,3 +39,134 @@ Consider signing up the HPO mailing list at https://groups.io/g/human-phenotype-
 
 Follow us on twitter under the username @hp_ontology
 
+# HPO REST API (Docker)
+
+A containerized REST API for querying the Human Phenotype Ontology. Two server implementations are available — pick whichever fits your stack:
+
+| Implementation | Dockerfile | Base image | Ontology parser |
+|---------------|------------|------------|-----------------|
+| **Python** (FastAPI) | `Dockerfile` | `python:3.12-slim` | [pronto](https://github.com/althonos/pronto) |
+| **Node.js** (Express) | `Dockerfile.node` | `node:22-slim` | custom OBO parser |
+
+Both expose the same endpoints on port **8000**:
+
+| Endpoint | Description |
+|----------|-------------|
+| `GET /api/ontology` | Ontology metadata (name, version, term count) |
+| `GET /api/terms/{id}` | Term detail — definition, synonyms, xrefs, parents, children |
+| `GET /api/terms/{id}/parents?distance=N` | Ancestor terms up to N hops |
+| `GET /api/terms/{id}/children?distance=N` | Descendant terms up to N hops |
+| `GET /api/search?q=...&limit=N` | Full-text search across names and synonyms |
+| `GET /health` | Health check |
+| `GET /docs` | Interactive Swagger UI |
+
+## Quick start with Docker Compose
+
+The compose file uses [profiles](https://docs.docker.com/compose/how-tos/profiles/) so only one server runs at a time. Both mount `hp.obo` (and `hp-base.owl` for Python) from the repo root.
+
+```bash
+# Python server
+docker compose --profile python up
+
+# Node.js server
+docker compose --profile node up
+```
+
+Add `-d` to run in the background, `--build` to force a rebuild.
+
+## Building images manually
+
+```bash
+# Python
+docker build -t hpo-api:python -f Dockerfile .
+
+# Node.js
+docker build -t hpo-api:node -f Dockerfile.node .
+```
+
+## Running with custom ontology files
+
+Mount your own `.obo` or `.owl` file into `/data/` inside the container:
+
+```bash
+# Python — reads OBO first, falls back to OWL
+docker run -p 8000:8000 \
+  -v /path/to/hp.obo:/data/hp.obo:ro \
+  -v /path/to/hp.owl:/data/hp.owl:ro \
+  hpo-api:python
+
+# Node.js — reads OBO
+docker run -p 8000:8000 \
+  -v /path/to/hp.obo:/data/hp.obo:ro \
+  hpo-api:node
+```
+
+### Environment variables
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `HPO_OBO_PATH` | `/data/hp.obo` | Path to the OBO ontology file inside the container |
+| `HPO_OWL_PATH` | `/data/hp.owl` | Path to the OWL ontology file (Python only, used as fallback) |
+| `PORT` | `8000` | Listening port (Node.js only; Python uses uvicorn's `--port`) |
+
+## Publishing images to a registry
+
+### GitHub Container Registry (ghcr.io)
+
+```bash
+# Log in (use a personal access token with write:packages scope)
+echo "$GITHUB_TOKEN" | docker login ghcr.io -u YOUR_USERNAME --password-stdin
+
+# Tag and push — Python
+docker build -t ghcr.io/YOUR_ORG/hpo-api:python -f Dockerfile .
+docker push ghcr.io/YOUR_ORG/hpo-api:python
+
+# Tag and push — Node.js
+docker build -t ghcr.io/YOUR_ORG/hpo-api:node -f Dockerfile.node .
+docker push ghcr.io/YOUR_ORG/hpo-api:node
+```
+
+### Docker Hub
+
+```bash
+docker login
+
+# Python
+docker build -t YOUR_DOCKERHUB_USER/hpo-api:python -f Dockerfile .
+docker push YOUR_DOCKERHUB_USER/hpo-api:python
+
+# Node.js
+docker build -t YOUR_DOCKERHUB_USER/hpo-api:node -f Dockerfile.node .
+docker push YOUR_DOCKERHUB_USER/hpo-api:node
+```
+
+### Versioned tags
+
+Tag images with the HPO release version for reproducibility:
+
+```bash
+HPO_VERSION=2026-02-16
+
+docker build -t ghcr.io/YOUR_ORG/hpo-api:python-${HPO_VERSION} -f Dockerfile .
+docker build -t ghcr.io/YOUR_ORG/hpo-api:node-${HPO_VERSION} -f Dockerfile.node .
+
+docker push ghcr.io/YOUR_ORG/hpo-api:python-${HPO_VERSION}
+docker push ghcr.io/YOUR_ORG/hpo-api:node-${HPO_VERSION}
+```
+
+## Example API usage
+
+```bash
+# Get ontology metadata
+curl http://localhost:8000/api/ontology
+
+# Look up a term by HPO ID
+curl http://localhost:8000/api/terms/HP:0001250
+
+# Search for terms
+curl "http://localhost:8000/api/search?q=seizure&limit=5"
+
+# Get ancestors up to 3 levels
+curl "http://localhost:8000/api/terms/HP:0001250/parents?distance=3"
+```
+
