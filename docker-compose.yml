@@ -1,5 +1,6 @@
 services:
   hpo-api:
+    image: threevl/hpo:latest
     build:
       context: .
       dockerfile: Dockerfile
@@ -15,6 +16,7 @@ services:
       - python
 
   hpo-api-node:
+    image: threevl/hpo-node:latest
     build:
       context: .
       dockerfile: Dockerfile.node

@@ -98,6 +98,14 @@ npm run publish       # requires `npm login` and publish rights for the @threevl
 
 In GitHub: add an **`NPM_TOKEN`** repository secret (automation token with publish access to `@threevl`), then run the **Publish npm packages** workflow from the Actions tab.
 
+### Publishing Docker Hub images
+
+Official images on [Docker Hub](https://hub.docker.com/) are **`threevl/hpo`** (Python) and **`threevl/hpo-node`** (Node).
+
+In GitHub: add repository secrets **`DOCKERHUB_USERNAME`** and **`DOCKERHUB_TOKEN`** (a [Docker Hub access token](https://docs.docker.com/docker-hub/access-tokens/), not your account password). The token’s user must be allowed to push to the `threevl` organization’s `hpo` and `hpo-node` repositories.
+
+Then run **Publish Docker Hub images** from the Actions tab (optional tag, default `latest`), or push a git tag matching `v*` (the tag name is used as the image tag, e.g. `v2026-05-12`).
+
 ## Building images manually
 
 ```bash
@@ -152,17 +160,21 @@ docker push ghcr.io/YOUR_ORG/hpo-api:node
 
 ### Docker Hub
 
+Published by CI as **`threevl/hpo`** and **`threevl/hpo-node`** (see *Publishing Docker Hub images* above). Manual push with the same names:
+
 ```bash
 docker login
 
 # Python
-docker build -t YOUR_DOCKERHUB_USER/hpo-api:python -f Dockerfile .
-docker push YOUR_DOCKERHUB_USER/hpo-api:python
+docker build -t threevl/hpo:latest -f Dockerfile .
+docker push threevl/hpo:latest
 
 # Node.js
-docker build -t YOUR_DOCKERHUB_USER/hpo-api:node -f Dockerfile.node .
-docker push YOUR_DOCKERHUB_USER/hpo-api:node
+docker build -t threevl/hpo-node:latest -f Dockerfile.node .
+docker push threevl/hpo-node:latest
 ```
+
+Replace `threevl` with your Docker Hub username or organization if you use a different namespace.
 
 ### Versioned tags
 
@@ -171,11 +183,17 @@ Tag images with the HPO release version for reproducibility:
 ```bash
 HPO_VERSION=2026-02-16
 
+# GitHub Container Registry
 docker build -t ghcr.io/YOUR_ORG/hpo-api:python-${HPO_VERSION} -f Dockerfile .
 docker build -t ghcr.io/YOUR_ORG/hpo-api:node-${HPO_VERSION} -f Dockerfile.node .
-
 docker push ghcr.io/YOUR_ORG/hpo-api:python-${HPO_VERSION}
 docker push ghcr.io/YOUR_ORG/hpo-api:node-${HPO_VERSION}
+
+# Docker Hub (same names as CI)
+docker build -t threevl/hpo:${HPO_VERSION} -f Dockerfile .
+docker build -t threevl/hpo-node:${HPO_VERSION} -f Dockerfile.node .
+docker push threevl/hpo:${HPO_VERSION}
+docker push threevl/hpo-node:${HPO_VERSION}
 ```
 
 ## Example API usage
