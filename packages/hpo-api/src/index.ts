@@ -8,6 +8,12 @@ import {
   OntologyFileNotFoundError,
 } from "@threevl/hpo-lib";
 
+function isOntologyFileNotFoundError(
+  e: unknown
+): e is OntologyFileNotFoundError {
+  return e instanceof OntologyFileNotFoundError;
+}
+
 const HPO_OBO_PATH = process.env.HPO_OBO_PATH ?? "/data/hp.obo";
 const PORT = parseInt(process.env.PORT ?? "8000", 10);
 
@@ -18,7 +24,7 @@ function main(): void {
   try {
     ontology = loadOntologyFromFile(HPO_OBO_PATH);
   } catch (e: unknown) {
-    if (e instanceof OntologyFileNotFoundError) {
+    if (isOntologyFileNotFoundError(e)) {
       console.error(e.message);
       console.error("Mount your .obo file into the container at /data/hp.obo");
       process.exit(1);
