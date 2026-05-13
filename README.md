@@ -76,7 +76,7 @@ Add `-d` to run in the background, `--build` to force a rebuild.
 
 ### Developing the Node.js API locally
 
-The Node server lives in a **Turborepo** at the repo root ([`package.json`](package.json), [`turbo.json`](turbo.json)) with workspaces under [`packages/`](packages/): `@threevl/hpo-lib` (parser + resolvers), `@threevl/hpo-express` (Express router), and `@threevl/hpo-api` (standalone server). Build output is under `packages/*/dist/` (ignored by git).
+The Node server uses **npm workspaces** at the repo root ([`package.json`](package.json)) with packages under [`packages/`](packages/): `@threevl/hpo-lib` (parser + resolvers), `@threevl/hpo-express` (Express router), and `@threevl/hpo-api` (standalone server). Build output is under `packages/*/dist/` (ignored by git).
 
 ```bash
 npm ci
@@ -84,7 +84,7 @@ npm run build
 HPO_OBO_PATH=/path/to/hp.obo npm start
 ```
 
-Use `npm run dev` at the repo root to run `tsc --watch` in all workspaces via Turbo.
+Use `npm run dev` at the repo root to run `tsc --watch` in all three packages in parallel (via `concurrently`).
 
 ### Publishing `@threevl/*` packages to npm
 

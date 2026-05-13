@@ -160,3 +160,4 @@ node_modules/
 .turbo/
 packages/.turbo/
 packages/*/dist/
+packages/*/tsconfig.tsbuildinfo

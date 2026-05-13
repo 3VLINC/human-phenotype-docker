@@ -17,13 +17,13 @@ function main(): void {
   let ontology;
   try {
     ontology = loadOntologyFromFile(HPO_OBO_PATH);
-  } catch (err) {
-    if (err instanceof OntologyFileNotFoundError) {
-      console.error(err.message);
+  } catch (e: unknown) {
+    if (e instanceof OntologyFileNotFoundError) {
+      console.error(e.message);
       console.error("Mount your .obo file into the container at /data/hp.obo");
       process.exit(1);
     }
-    throw err;
+    throw e;
   }
   const elapsed = Date.now() - start;
   console.log(

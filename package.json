@@ -1,22 +1,22 @@
 {
   "name": "human-phenotype-docker",
   "private": true,
-  "description": "Monorepo root for HPO TypeScript packages (Turborepo)",
+  "description": "Monorepo root for HPO Node packages (npm workspaces)",
   "workspaces": [
     "packages/*"
   ],
   "scripts": {
-    "build": "turbo run build",
-    "dev": "turbo run dev",
+    "build": "npm run build -w @threevl/hpo-lib && npm run build -w @threevl/hpo-express && npm run build -w @threevl/hpo-api",
+    "dev": "concurrently -n lib,express,api -c blue,magenta,green \"npm run dev -w @threevl/hpo-lib\" \"npm run dev -w @threevl/hpo-express\" \"npm run dev -w @threevl/hpo-api\"",
     "start": "npm run start -w @threevl/hpo-api",
     "publish": "npm run build && npm publish -w @threevl/hpo-lib && npm publish -w @threevl/hpo-express && npm publish -w @threevl/hpo-api",
     "publish:dry": "npm run build && npm publish -w @threevl/hpo-lib --dry-run && npm publish -w @threevl/hpo-express --dry-run && npm publish -w @threevl/hpo-api --dry-run"
   },
   "devDependencies": {
-    "turbo": "^2.3.3",
+    "concurrently": "^9.1.2",
     "typescript": "^5.7.2"
   },
-  "packageManager": "npm@9.8.1",
+  "packageManager": "npm@10.9.2",
   "engines": {
     "node": ">=18"
   }
