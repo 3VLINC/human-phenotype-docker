@@ -6,11 +6,12 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "tsc -b packages/hpo-lib/tsconfig.json && tsc -b packages/hpo-express/tsconfig.json && tsc -b packages/hpo-api/tsconfig.json",
+    "build": "tsc -b packages/hpo-lib/tsconfig.json && tsc -b packages/hpo-express/tsconfig.json && node scripts/npm-workspace-debug.cjs pre-api && tsc -b packages/hpo-api/tsconfig.json",
     "dev": "concurrently -n lib,express,api -c blue,magenta,green \"npm run dev -w @threevl/hpo-lib\" \"npm run dev -w @threevl/hpo-express\" \"npm run dev -w @threevl/hpo-api\"",
     "start": "npm run start -w @threevl/hpo-api",
     "publish": "npm run build && npm publish -w @threevl/hpo-lib && npm publish -w @threevl/hpo-express && npm publish -w @threevl/hpo-api",
-    "publish:dry": "npm run build && npm publish -w @threevl/hpo-lib --dry-run && npm publish -w @threevl/hpo-express --dry-run && npm publish -w @threevl/hpo-api --dry-run"
+    "publish:dry": "npm run build && npm publish -w @threevl/hpo-lib --dry-run && npm publish -w @threevl/hpo-express --dry-run && npm publish -w @threevl/hpo-api --dry-run",
+    "publish:pack": "npm run build && npm pack -w @threevl/hpo-lib && npm pack -w @threevl/hpo-express && npm pack -w @threevl/hpo-api"
   },
   "devDependencies": {
     "concurrently": "^9.1.2",

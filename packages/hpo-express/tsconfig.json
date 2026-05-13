@@ -3,6 +3,10 @@
   "compilerOptions": {
     "outDir": "dist",
     "rootDir": "src",
+    "baseUrl": ".",
+    "paths": {
+      "@threevl/hpo-lib": ["../hpo-lib/dist/index.d.ts"]
+    },
     "disableSourceOfProjectReferenceRedirect": true
   },
   "references": [{ "path": "../hpo-lib" }],
