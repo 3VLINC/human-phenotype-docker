@@ -76,7 +76,7 @@ Add `-d` to run in the background, `--build` to force a rebuild.
 
 ### Developing the Node.js API locally
 
-The Node server uses **npm workspaces** at the repo root ([`package.json`](package.json)) with packages under [`packages/`](packages/): `@threevl/hpo-lib` (parser + resolvers), `@threevl/hpo-express` (Express router), and `@threevl/hpo-api` (standalone server). Build output is under `packages/*/dist/` (ignored by git).
+The Node server uses **npm workspaces** at the repo root ([`package.json`](package.json)) with packages under [`packages/`](packages/): `@threevl/hpo-lib` (parser + resolvers), `@threevl/hpo-express` (Express router), and `@threevl/hpo-api` (standalone server). Build output is under `packages/*/dist/` (ignored by git). The root **`npm run build`** runs one TypeScript solution build ([`packages/tsconfig.packages.json`](packages/tsconfig.packages.json)) so composite project references resolve `@threevl/*` imports reliably in CI and locally.
 
 ```bash
 npm ci

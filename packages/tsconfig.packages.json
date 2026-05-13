@@ -1,0 +1,8 @@
+{
+  "files": [],
+  "references": [
+    { "path": "./hpo-lib" },
+    { "path": "./hpo-express" },
+    { "path": "./hpo-api" }
+  ]
+}

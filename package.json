@@ -6,7 +6,7 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "npm run build -w @threevl/hpo-lib && npm run build -w @threevl/hpo-express && npm run build -w @threevl/hpo-api",
+    "build": "tsc -b packages/tsconfig.packages.json",
     "dev": "concurrently -n lib,express,api -c blue,magenta,green \"npm run dev -w @threevl/hpo-lib\" \"npm run dev -w @threevl/hpo-express\" \"npm run dev -w @threevl/hpo-api\"",
     "start": "npm run start -w @threevl/hpo-api",
     "publish": "npm run build && npm publish -w @threevl/hpo-lib && npm publish -w @threevl/hpo-express && npm publish -w @threevl/hpo-api",
