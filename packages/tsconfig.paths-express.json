@@ -1,0 +1,8 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@threevl/hpo-lib": ["../hpo-lib/dist/index.d.ts"]
+    }
+  }
+}
