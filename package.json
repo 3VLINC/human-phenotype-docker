@@ -1,5 +1,6 @@
 {
   "name": "human-phenotype-docker",
+  "version": "0.0.2",
   "private": true,
   "description": "Monorepo root for HPO Node packages (npm workspaces)",
   "workspaces": [
@@ -11,7 +12,11 @@
     "start": "npm run start -w @threevl/hpo-api",
     "publish": "npm run build && npm publish -w @threevl/hpo-lib && npm publish -w @threevl/hpo-express && npm publish -w @threevl/hpo-api",
     "publish:dry": "npm run build && npm publish -w @threevl/hpo-lib --dry-run && npm publish -w @threevl/hpo-express --dry-run && npm publish -w @threevl/hpo-api --dry-run",
-    "publish:pack": "npm run build && npm pack -w @threevl/hpo-lib && npm pack -w @threevl/hpo-express && npm pack -w @threevl/hpo-api"
+    "publish:pack": "npm run build && npm pack -w @threevl/hpo-lib && npm pack -w @threevl/hpo-express && npm pack -w @threevl/hpo-api",
+    "lockstep:patch": "node scripts/bump-lockstep.cjs patch",
+    "lockstep:minor": "node scripts/bump-lockstep.cjs minor",
+    "lockstep:major": "node scripts/bump-lockstep.cjs major",
+    "lockstep:sync": "node scripts/bump-lockstep.cjs sync"
   },
   "devDependencies": {
     "concurrently": "^9.1.2",

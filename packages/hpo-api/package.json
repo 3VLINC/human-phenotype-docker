@@ -1,6 +1,6 @@
 {
   "name": "@threevl/hpo-api",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Standalone HTTP server for the Human Phenotype Ontology REST API",
   "repository": {
     "type": "git",
@@ -12,7 +12,10 @@
   "bin": {
     "hpo-api": "dist/index.js"
   },
-  "files": ["dist", "README.md"],
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "publishConfig": {
     "access": "public"
   },
@@ -22,8 +25,8 @@
     "start": "node dist/index.js"
   },
   "dependencies": {
-    "@threevl/hpo-express": "^0.0.1",
-    "@threevl/hpo-lib": "^0.0.1",
+    "@threevl/hpo-express": "^0.0.2",
+    "@threevl/hpo-lib": "^0.0.2",
     "express": "^4.21.0",
     "swagger-ui-express": "^5.0.0"
   },

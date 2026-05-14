@@ -88,7 +88,19 @@ Use `npm run dev` at the repo root to run `vite build --watch` in all three pack
 
 ### Publishing `@threevl/*` packages to npm
 
-Packages are versioned in each `packages/*/package.json` (currently **0.0.1**). Each published package includes a **`repository`** field pointing at this GitHub repo — npm uses it to validate [Trusted publishing](https://docs.npmjs.com/trusted-publishers/) (OIDC). If you fork or rename the repo, update `repository.url` in all three packages to match.
+Packages use **lockstep** semver: one canonical **`version`** on the root [`package.json`](package.json), mirrored on `@threevl/hpo-lib`, `@threevl/hpo-express`, and `@threevl/hpo-api`. Internal deps stay aligned as `^<that-version>`.
+
+Bump and refresh the lockfile (manual, not CI):
+
+```bash
+npm run lockstep:patch   # or lockstep:minor | lockstep:major
+```
+
+To only re-copy the root `version` onto the three packages (e.g. you edited root `version` by hand): `npm run lockstep:sync`.
+
+Prerelease tags (`0.1.0-rc.1`) are not supported by the script; use plain **X.Y.Z**.
+
+Each published package includes a **`repository`** field pointing at this GitHub repo — npm uses it to validate [Trusted publishing](https://docs.npmjs.com/trusted-publishers/) (OIDC). If you fork or rename the repo, update `repository.url` in all three packages to match.
 
 #### One-time: publish from your machine (e.g. first `0.0.1`)
 
