@@ -1,7 +1,11 @@
 {
-  "extends": "../tsconfig.paths-api.json",
+  "extends": "../tsconfig.base.json",
   "compilerOptions": {
     "baseUrl": ".",
+    "paths": {
+      "@threevl/hpo-lib": ["../hpo-lib/dist/index.d.ts"],
+      "@threevl/hpo-express": ["../hpo-express/dist/index.d.ts"]
+    },
     "outDir": "dist",
     "rootDir": "src",
     "disableSourceOfProjectReferenceRedirect": true
