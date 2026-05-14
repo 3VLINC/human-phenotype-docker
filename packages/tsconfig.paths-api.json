@@ -1,10 +1,9 @@
 {
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
-    "baseUrl": ".",
     "paths": {
-      "@threevl/hpo-lib": ["hpo-lib/dist/index.d.ts"],
-      "@threevl/hpo-express": ["hpo-express/dist/index.d.ts"]
+      "@threevl/hpo-lib": ["../hpo-lib/dist/index.d.ts"],
+      "@threevl/hpo-express": ["../hpo-express/dist/index.d.ts"]
     }
   }
 }

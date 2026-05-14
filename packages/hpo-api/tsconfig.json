@@ -1,6 +1,7 @@
 {
   "extends": "../tsconfig.paths-api.json",
   "compilerOptions": {
+    "baseUrl": ".",
     "outDir": "dist",
     "rootDir": "src",
     "disableSourceOfProjectReferenceRedirect": true
