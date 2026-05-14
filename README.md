@@ -76,7 +76,7 @@ Add `-d` to run in the background, `--build` to force a rebuild.
 
 ### Developing the Node.js API locally
 
-The Node server uses **npm workspaces** at the repo root ([`package.json`](package.json)) with packages under [`packages/`](packages/): `@threevl/hpo-lib` (parser + resolvers), `@threevl/hpo-express` (Express router), and `@threevl/hpo-api` (standalone server). Build output is under `packages/*/dist/` (ignored by git). The root **`npm run build`** runs **`tsc -b tsconfig.json`** at the repo root ([`tsconfig.json`](tsconfig.json)), which builds the three workspace packages in **reference order** (`hpo-lib` → `hpo-express` → `hpo-api`) in a single TypeScript build graph so `dist/` for dependencies exists before dependents typecheck. Package-level **`compilerOptions.paths`** map published names `@threevl/*` to sibling **`dist/index.d.ts`** files (see each package’s `tsconfig.json`). Use **`npm run build`** from the repo root so `tsc` comes from this repo’s `typescript` devDependency (older global `tsc` can mis-parse modern `tsconfig` or lack features). The repo root [`tsconfig.json`](tsconfig.json) is a **solution-style** project reference file for editors (e.g. VS Code); the canonical build remains `npm run build`.
+The Node server uses **npm workspaces** at the repo root ([`package.json`](package.json)) with packages under [`packages/`](packages/): `@threevl/hpo-lib` (parser + resolvers), `@threevl/hpo-express` (Express router), and `@threevl/hpo-api` (standalone server). Build output is under `packages/*/dist/` (ignored by git). The root **`npm run build`** runs **[Turborepo](https://turbo.build/)** (`turbo run build` via [`turbo.json`](turbo.json)), which schedules each package’s **`vite build`** in dependency order (`hpo-lib` → `hpo-express` → `hpo-api`). Each package uses **[Vite](https://vite.dev/)** library mode to emit bundled **CommonJS** `dist/index.js` plus rolled-up `dist/index.d.ts` (see each package’s `vite.config.mts`). Run **`npm run build`** from the repo root so `turbo` and `vite` come from this repo’s devDependencies. The root [`tsconfig.json`](tsconfig.json) is minimal; package sources use [`packages/tsconfig.base.json`](packages/tsconfig.base.json) for editor/typechecking (`noEmit`).
 
 ```bash
 npm ci
@@ -84,7 +84,7 @@ npm run build
 HPO_OBO_PATH=/path/to/hp.obo npm start
 ```
 
-Use `npm run dev` at the repo root to run `tsc --watch` in all three packages in parallel (via `concurrently`).
+Use `npm run dev` at the repo root to run `vite build --watch` in all three packages in parallel (via `concurrently`).
 
 ### Publishing `@threevl/*` packages to npm
 

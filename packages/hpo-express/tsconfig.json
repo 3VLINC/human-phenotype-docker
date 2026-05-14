@@ -1,14 +1,9 @@
 {
   "extends": "../tsconfig.base.json",
   "compilerOptions": {
-    "baseUrl": ".",
-    "paths": {
-      "@threevl/hpo-lib": ["../hpo-lib/dist/index.d.ts"]
-    },
-    "outDir": "dist",
-    "rootDir": "src",
-    "disableSourceOfProjectReferenceRedirect": true
+    "noEmit": true,
+    "declaration": false,
+    "declarationMap": false
   },
-  "references": [{ "path": "../hpo-lib" }],
   "include": ["src/**/*.ts"]
 }

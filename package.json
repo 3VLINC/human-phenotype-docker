@@ -6,7 +6,7 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "tsc -b tsconfig.json",
+    "build": "turbo run build",
     "dev": "concurrently -n lib,express,api -c blue,magenta,green \"npm run dev -w @threevl/hpo-lib\" \"npm run dev -w @threevl/hpo-express\" \"npm run dev -w @threevl/hpo-api\"",
     "start": "npm run start -w @threevl/hpo-api",
     "publish": "npm run build && npm publish -w @threevl/hpo-lib && npm publish -w @threevl/hpo-express && npm publish -w @threevl/hpo-api",
@@ -15,7 +15,10 @@
   },
   "devDependencies": {
     "concurrently": "^9.1.2",
-    "typescript": "^5.7.2"
+    "turbo": "^2.9.0",
+    "typescript": "^5.7.2",
+    "vite": "^6.3.5",
+    "vite-plugin-dts": "^4.5.4"
   },
   "packageManager": "npm@10.9.2",
   "engines": {

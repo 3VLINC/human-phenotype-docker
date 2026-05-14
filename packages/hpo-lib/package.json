@@ -9,8 +9,8 @@
     "access": "public"
   },
   "scripts": {
-    "build": "tsc -b",
-    "dev": "tsc -b --watch"
+    "build": "vite build",
+    "dev": "vite build --watch"
   },
   "devDependencies": {
     "@types/node": "^22.10.0"
