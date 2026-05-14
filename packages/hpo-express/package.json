@@ -1,7 +1,12 @@
 {
   "name": "@threevl/hpo-express",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "Express router for the Human Phenotype Ontology REST API",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/3VLINC/human-phenotype-docker.git",
+    "directory": "packages/hpo-express"
+  },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": ["dist", "README.md"],
@@ -13,7 +18,7 @@
     "dev": "vite build --watch"
   },
   "dependencies": {
-    "@threevl/hpo-lib": "^1.0.0"
+    "@threevl/hpo-lib": "^0.0.1"
   },
   "peerDependencies": {
     "express": "^4.21.0",

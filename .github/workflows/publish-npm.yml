@@ -1,5 +1,10 @@
-# Publishes @threevl/hpo-lib, @threevl/hpo-express, and @threevl/hpo-api to npm.
-# Requires repository secret NPM_TOKEN (npm automation token with publish access to @threevl).
+# Publishes @threevl/hpo-lib, @threevl/hpo-express, and @threevl/hpo-api via npm Trusted Publishing (OIDC).
+# Configure each package on npmjs.com → Package → Settings → Trusted publishing:
+#   Provider: GitHub Actions
+#   Repository: <your-org>/human-phenotype-docker (must match package.json repository.url host/path)
+#   Workflow filename: publish-npm.yml
+# Requires npm CLI ≥ 11.5.1 and Node ≥ 22.14 (see setup-node below).
+# Optional: NPM_READ_TOKEN secret (read-only) only if you add private npm dependencies later.
 name: Publish npm packages
 
 on:
@@ -7,6 +12,7 @@ on:
 
 permissions:
   contents: read
+  id-token: write
 
 jobs:
   publish:
@@ -16,9 +22,12 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: "22"
+          node-version: "24"
           registry-url: "https://registry.npmjs.org"
-          cache: "npm"
+          cache: npm
+
+      - name: Ensure npm version for OIDC trusted publishing
+        run: npm install -g npm@^11.5.1
 
       - name: Install and build
         run: |
@@ -27,15 +36,9 @@ jobs:
 
       - name: Publish @threevl/hpo-lib
         run: npm publish -w @threevl/hpo-lib --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish @threevl/hpo-express
         run: npm publish -w @threevl/hpo-express --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish @threevl/hpo-api
         run: npm publish -w @threevl/hpo-api --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

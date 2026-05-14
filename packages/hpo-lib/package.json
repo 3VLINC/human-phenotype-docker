@@ -1,7 +1,12 @@
 {
   "name": "@threevl/hpo-lib",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "Server-agnostic Human Phenotype Ontology (.obo) parser and query resolvers",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/3VLINC/human-phenotype-docker.git",
+    "directory": "packages/hpo-lib"
+  },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": ["dist", "README.md"],

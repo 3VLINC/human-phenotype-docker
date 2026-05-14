@@ -1,7 +1,12 @@
 {
   "name": "@threevl/hpo-api",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "Standalone HTTP server for the Human Phenotype Ontology REST API",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/3VLINC/human-phenotype-docker.git",
+    "directory": "packages/hpo-api"
+  },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
@@ -17,8 +22,8 @@
     "start": "node dist/index.js"
   },
   "dependencies": {
-    "@threevl/hpo-express": "^1.0.0",
-    "@threevl/hpo-lib": "^1.0.0",
+    "@threevl/hpo-express": "^0.0.1",
+    "@threevl/hpo-lib": "^0.0.1",
     "express": "^4.21.0",
     "swagger-ui-express": "^5.0.0"
   },

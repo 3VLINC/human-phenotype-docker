@@ -88,15 +88,39 @@ Use `npm run dev` at the repo root to run `vite build --watch` in all three pack
 
 ### Publishing `@threevl/*` packages to npm
 
-Bump the `version` field in each of `packages/hpo-lib/package.json`, `packages/hpo-express/package.json`, and `packages/hpo-api/package.json` as needed, then:
+Packages are versioned in each `packages/*/package.json` (currently **0.0.1**). Each published package includes a **`repository`** field pointing at this GitHub repo — npm uses it to validate [Trusted publishing](https://docs.npmjs.com/trusted-publishers/) (OIDC). If you fork or rename the repo, update `repository.url` in all three packages to match.
+
+#### One-time: publish from your machine (e.g. first `0.0.1`)
+
+Use Node **≥ 22.14** and npm **≥ 11.5.1** (required later for OIDC in Actions). Then:
 
 ```bash
+npm login   # browser or token; 2FA accounts need an OTP when publishing
 npm ci
-npm run publish:dry   # optional: inspect tarballs without uploading
-npm run publish       # requires `npm login` and publish rights for the @threevl scope
+npm run build
+OTP=123456   # replace with your current authenticator code (same code often works for all three if used quickly)
+
+npm publish -w @threevl/hpo-lib --access public --otp=$OTP
+npm publish -w @threevl/hpo-express --access public --otp=$OTP
+npm publish -w @threevl/hpo-api --access public --otp=$OTP
 ```
 
-In GitHub: add an **`NPM_TOKEN`** repository secret (automation token with publish access to `@threevl`), then run the **Publish npm packages** workflow from the Actions tab.
+Or run `npm run publish` and enter the OTP when npm prompts (may prompt once per publish).
+
+#### GitHub Actions: Trusted publishing (no `NPM_TOKEN`)
+
+1. On [npmjs.com](https://www.npmjs.com/), open **each** of `@threevl/hpo-lib`, `@threevl/hpo-express`, and `@threevl/hpo-api` → **Settings** → **Trusted publishing** → **GitHub Actions**.
+2. Set **Repository** to your GitHub org/repo (must match `repository.url` in `package.json`, e.g. `3VLINC/human-phenotype-docker`).
+3. Set **Workflow filename** to **`publish-npm.yml`** (exact name, including `.yml`).
+4. Save. Repeat for all three packages.
+
+The workflow [`.github/workflows/publish-npm.yml`](.github/workflows/publish-npm.yml) uses `permissions: id-token: write`, Node **24**, and upgrades the global npm to **≥ 11.5.1** before `npm publish`. **Do not** set `NODE_AUTH_TOKEN` on publish steps — the CLI uses OIDC automatically.
+
+Optional: after OIDC works, under package **Publishing access**, you can restrict token-based publishing per npm’s “maximum security” guidance.
+
+#### Legacy CI (token + Automation)
+
+If Trusted publishing is not configured yet, add an **`NPM_TOKEN`** secret (classic type **Automation**) and temporarily restore `NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}` on each `npm publish` step. A classic **Publish** token triggers **`EOTP`** in CI because Actions cannot supply an OTP.
 
 ### Publishing Docker Hub images
 
