@@ -1,5 +1,5 @@
 {
-  "extends": ["../tsconfig.base.json", "../tsconfig.paths-express.json"],
+  "extends": "../tsconfig.paths-express.json",
   "compilerOptions": {
     "outDir": "dist",
     "rootDir": "src",
