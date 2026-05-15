@@ -1,6 +1,6 @@
 {
   "name": "@threevl/hpo-lib",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Server-agnostic Human Phenotype Ontology (.obo) parser and query resolvers",
   "repository": {
     "type": "git",

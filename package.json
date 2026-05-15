@@ -1,6 +1,6 @@
 {
   "name": "human-phenotype-docker",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "private": true,
   "description": "Monorepo root for HPO Node packages (npm workspaces)",
   "workspaces": [

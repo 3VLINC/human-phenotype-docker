@@ -1,6 +1,6 @@
 {
   "name": "@threevl/hpo-express",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Express router for the Human Phenotype Ontology REST API",
   "repository": {
     "type": "git",
@@ -21,7 +21,7 @@
     "dev": "vite build --watch"
   },
   "dependencies": {
-    "@threevl/hpo-middleware": "^0.0.2"
+    "@threevl/hpo-middleware": "^0.0.3"
   },
   "peerDependencies": {
     "express": "^4.21.0",

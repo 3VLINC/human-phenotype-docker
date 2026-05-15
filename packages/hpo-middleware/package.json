@@ -1,6 +1,6 @@
 {
   "name": "@threevl/hpo-middleware",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Web Fetch Request/Response handler for the Human Phenotype Ontology REST API",
   "repository": {
     "type": "git",
@@ -21,7 +21,7 @@
     "dev": "vite build --watch"
   },
   "dependencies": {
-    "@threevl/hpo-lib": "^0.0.2"
+    "@threevl/hpo-lib": "^0.0.3"
   },
   "devDependencies": {
     "@types/node": "^22.10.0"
