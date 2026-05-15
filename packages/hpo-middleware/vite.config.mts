@@ -1,3 +1,4 @@
+import { builtinModules } from "node:module";
 import { fileURLToPath } from "node:url";
 import { defineConfig } from "vite";
 import dts from "vite-plugin-dts";
@@ -5,12 +6,9 @@ import dts from "vite-plugin-dts";
 const root = fileURLToPath(new URL(".", import.meta.url));
 const entry = fileURLToPath(new URL("src/index.ts", import.meta.url));
 
-const external = [
-  "express",
-  /^express\//,
-  "swagger-ui-express",
-  /^swagger-ui-express\//,
-  /^@threevl\/hpo-middleware(\/|$)/,
+const nodeBuiltins = [
+  ...builtinModules,
+  ...builtinModules.map((m) => `node:${m}`),
 ];
 
 export default defineConfig({
@@ -34,7 +32,7 @@ export default defineConfig({
     emptyOutDir: true,
     sourcemap: true,
     rollupOptions: {
-      external,
+      external: [...nodeBuiltins, /^@threevl\/hpo-lib(\/|$)/],
     },
   },
 });

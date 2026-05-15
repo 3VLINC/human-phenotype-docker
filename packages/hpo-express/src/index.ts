@@ -1,2 +1,7 @@
 export { createHpoRouter, type CreateHpoRouterOptions } from "./middleware";
-export { hpoOpenApiSpec } from "./openapi";
+export {
+  buildHpoOpenApiSpec,
+  createHpoFetchHandler,
+  hpoOpenApiSpec,
+  type CreateHpoFetchHandlerOptions,
+} from "@threevl/hpo-middleware";

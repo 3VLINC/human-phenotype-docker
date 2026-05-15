@@ -1,0 +1,29 @@
+{
+  "name": "@threevl/hpo-middleware",
+  "version": "0.0.2",
+  "description": "Web Fetch Request/Response handler for the Human Phenotype Ontology REST API",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/3VLINC/human-phenotype-docker.git",
+    "directory": "packages/hpo-middleware"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite build --watch"
+  },
+  "dependencies": {
+    "@threevl/hpo-lib": "^0.0.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0"
+  }
+}

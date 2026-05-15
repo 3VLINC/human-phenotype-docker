@@ -13,6 +13,7 @@ const rootPkgPath = path.join(rootDir, "package.json");
 
 const workspacePackages = [
   path.join(rootDir, "packages", "hpo-lib", "package.json"),
+  path.join(rootDir, "packages", "hpo-middleware", "package.json"),
   path.join(rootDir, "packages", "hpo-express", "package.json"),
   path.join(rootDir, "packages", "hpo-api", "package.json"),
 ];
@@ -67,18 +68,24 @@ function applyVersion(version) {
   lib.version = version;
   writeJson(workspacePackages[0], lib);
 
-  const express = readJson(workspacePackages[1]);
+  const middleware = readJson(workspacePackages[1]);
+  middleware.version = version;
+  middleware.dependencies = middleware.dependencies || {};
+  middleware.dependencies["@threevl/hpo-lib"] = range;
+  writeJson(workspacePackages[1], middleware);
+
+  const express = readJson(workspacePackages[2]);
   express.version = version;
   express.dependencies = express.dependencies || {};
-  express.dependencies["@threevl/hpo-lib"] = range;
-  writeJson(workspacePackages[1], express);
+  express.dependencies["@threevl/hpo-middleware"] = range;
+  writeJson(workspacePackages[2], express);
 
-  const api = readJson(workspacePackages[2]);
+  const api = readJson(workspacePackages[3]);
   api.version = version;
   api.dependencies = api.dependencies || {};
   api.dependencies["@threevl/hpo-express"] = range;
   api.dependencies["@threevl/hpo-lib"] = range;
-  writeJson(workspacePackages[2], api);
+  writeJson(workspacePackages[3], api);
 }
 
 const cmd = process.argv[2];
@@ -115,7 +122,9 @@ if (cmd === "sync") {
 }
 
 applyVersion(nextVersion);
-console.log("Updated root + packages/hpo-{lib,express,api}/package.json");
+console.log(
+  "Updated root + packages/hpo-{lib,middleware,express,api}/package.json",
+);
 
 try {
   execSync("npm install", { cwd: rootDir, stdio: "inherit" });

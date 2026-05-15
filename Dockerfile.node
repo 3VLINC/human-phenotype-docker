@@ -5,12 +5,14 @@ WORKDIR /app
 COPY package.json package-lock.json turbo.json tsconfig.json ./
 COPY packages/tsconfig.base.json ./packages/tsconfig.base.json
 COPY packages/hpo-lib/package.json ./packages/hpo-lib/
+COPY packages/hpo-middleware/package.json ./packages/hpo-middleware/
 COPY packages/hpo-express/package.json ./packages/hpo-express/
 COPY packages/hpo-api/package.json ./packages/hpo-api/
 
 RUN npm ci
 
 COPY packages/hpo-lib ./packages/hpo-lib
+COPY packages/hpo-middleware ./packages/hpo-middleware
 COPY packages/hpo-express ./packages/hpo-express
 COPY packages/hpo-api ./packages/hpo-api
 
@@ -22,12 +24,14 @@ WORKDIR /app
 
 COPY package.json package-lock.json ./
 COPY packages/hpo-lib/package.json ./packages/hpo-lib/
+COPY packages/hpo-middleware/package.json ./packages/hpo-middleware/
 COPY packages/hpo-express/package.json ./packages/hpo-express/
 COPY packages/hpo-api/package.json ./packages/hpo-api/
 
 RUN npm ci --omit=dev
 
 COPY --from=builder /app/packages/hpo-lib/dist ./packages/hpo-lib/dist
+COPY --from=builder /app/packages/hpo-middleware/dist ./packages/hpo-middleware/dist
 COPY --from=builder /app/packages/hpo-express/dist ./packages/hpo-express/dist
 COPY --from=builder /app/packages/hpo-api/dist ./packages/hpo-api/dist
 

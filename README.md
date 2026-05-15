@@ -76,7 +76,7 @@ Add `-d` to run in the background, `--build` to force a rebuild.
 
 ### Developing the Node.js API locally
 
-The Node server uses **npm workspaces** at the repo root ([`package.json`](package.json)) with packages under [`packages/`](packages/): `@threevl/hpo-lib` (parser + resolvers), `@threevl/hpo-express` (Express router), and `@threevl/hpo-api` (standalone server). Build output is under `packages/*/dist/` (ignored by git). The root **`npm run build`** runs **[Turborepo](https://turbo.build/)** (`turbo run build` via [`turbo.json`](turbo.json)), which schedules each package’s **`vite build`** in dependency order (`hpo-lib` → `hpo-express` → `hpo-api`). Each package uses **[Vite](https://vite.dev/)** library mode to emit bundled **CommonJS** `dist/index.js` plus rolled-up `dist/index.d.ts` (see each package’s `vite.config.mts`). Run **`npm run build`** from the repo root so `turbo` and `vite` come from this repo’s devDependencies. The root [`tsconfig.json`](tsconfig.json) is minimal; package sources use [`packages/tsconfig.base.json`](packages/tsconfig.base.json) for editor/typechecking (`noEmit`).
+The Node server uses **npm workspaces** at the repo root ([`package.json`](package.json)) with packages under [`packages/`](packages/): `@threevl/hpo-lib` (parser + resolvers), `@threevl/hpo-middleware` (Web `Request` → `Response` API), `@threevl/hpo-express` (Express adapter), and `@threevl/hpo-api` (standalone server). Build output is under `packages/*/dist/` (ignored by git). The root **`npm run build`** runs **[Turborepo](https://turbo.build/)** (`turbo run build` via [`turbo.json`](turbo.json)), which schedules each package’s **`vite build`** in dependency order (`hpo-lib` → `hpo-middleware` → `hpo-express` → `hpo-api`). Each package uses **[Vite](https://vite.dev/)** library mode to emit bundled **CommonJS** `dist/index.js` plus rolled-up `dist/index.d.ts` (see each package’s `vite.config.mts`). Run **`npm run build`** from the repo root so `turbo` and `vite` come from this repo’s devDependencies. The root [`tsconfig.json`](tsconfig.json) is minimal; package sources use [`packages/tsconfig.base.json`](packages/tsconfig.base.json) for editor/typechecking (`noEmit`).
 
 ```bash
 npm ci
@@ -84,11 +84,11 @@ npm run build
 HPO_OBO_PATH=/path/to/hp.obo npm start
 ```
 
-Use `npm run dev` at the repo root to run `vite build --watch` in all three packages in parallel (via `concurrently`).
+Use `npm run dev` at the repo root to run `vite build --watch` in all four packages in parallel (via `concurrently`).
 
 ### Publishing `@threevl/*` packages to npm
 
-Packages use **lockstep** semver: one canonical **`version`** on the root [`package.json`](package.json), mirrored on `@threevl/hpo-lib`, `@threevl/hpo-express`, and `@threevl/hpo-api`. Internal deps stay aligned as `^<that-version>`.
+Packages use **lockstep** semver: one canonical **`version`** on the root [`package.json`](package.json), mirrored on `@threevl/hpo-lib`, `@threevl/hpo-middleware`, `@threevl/hpo-express`, and `@threevl/hpo-api`. Internal deps stay aligned as `^<that-version>`.
 
 Bump and refresh the lockfile (manual, not CI):
 
@@ -96,11 +96,11 @@ Bump and refresh the lockfile (manual, not CI):
 npm run lockstep:patch   # or lockstep:minor | lockstep:major
 ```
 
-To only re-copy the root `version` onto the three packages (e.g. you edited root `version` by hand): `npm run lockstep:sync`.
+To only re-copy the root `version` onto all workspace packages (e.g. you edited root `version` by hand): `npm run lockstep:sync`.
 
 Prerelease tags (`0.1.0-rc.1`) are not supported by the script; use plain **X.Y.Z**.
 
-Each published package includes a **`repository`** field pointing at this GitHub repo — npm uses it to validate [Trusted publishing](https://docs.npmjs.com/trusted-publishers/) (OIDC). If you fork or rename the repo, update `repository.url` in all three packages to match.
+Each published package includes a **`repository`** field pointing at this GitHub repo — npm uses it to validate [Trusted publishing](https://docs.npmjs.com/trusted-publishers/) (OIDC). If you fork or rename the repo, update `repository.url` in all published packages to match.
 
 #### One-time: publish from your machine (e.g. first `0.0.1`)
 
@@ -113,6 +113,7 @@ npm run build
 OTP=123456   # replace with your current authenticator code (same code often works for all three if used quickly)
 
 npm publish -w @threevl/hpo-lib --access public --otp=$OTP
+npm publish -w @threevl/hpo-middleware --access public --otp=$OTP
 npm publish -w @threevl/hpo-express --access public --otp=$OTP
 npm publish -w @threevl/hpo-api --access public --otp=$OTP
 ```
@@ -121,10 +122,10 @@ Or run `npm run publish` and enter the OTP when npm prompts (may prompt once per
 
 #### GitHub Actions: Trusted publishing (no `NPM_TOKEN`)
 
-1. On [npmjs.com](https://www.npmjs.com/), open **each** of `@threevl/hpo-lib`, `@threevl/hpo-express`, and `@threevl/hpo-api` → **Settings** → **Trusted publishing** → **GitHub Actions**.
+1. On [npmjs.com](https://www.npmjs.com/), open **each** of `@threevl/hpo-lib`, `@threevl/hpo-middleware`, `@threevl/hpo-express`, and `@threevl/hpo-api` → **Settings** → **Trusted publishing** → **GitHub Actions**.
 2. Set **Repository** to your GitHub org/repo (must match `repository.url` in `package.json`, e.g. `3VLINC/human-phenotype-docker`).
 3. Set **Workflow filename** to **`publish-npm.yml`** (exact name, including `.yml`).
-4. Save. Repeat for all three packages.
+4. Save. Repeat for all four packages.
 
 The workflow [`.github/workflows/publish-npm.yml`](.github/workflows/publish-npm.yml) uses `permissions: id-token: write`, Node **24**, and upgrades the global npm to **≥ 11.5.1** before `npm publish`. **Do not** set `NODE_AUTH_TOKEN` on publish steps — the CLI uses OIDC automatically.
 

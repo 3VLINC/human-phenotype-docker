@@ -1,4 +1,4 @@
-# Publishes @threevl/hpo-lib, @threevl/hpo-express, and @threevl/hpo-api via npm Trusted Publishing (OIDC).
+# Publishes @threevl/hpo-lib, @threevl/hpo-middleware, @threevl/hpo-express, and @threevl/hpo-api via npm Trusted Publishing (OIDC).
 # Configure each package on npmjs.com → Package → Settings → Trusted publishing:
 #   Provider: GitHub Actions
 #   Repository: <your-org>/human-phenotype-docker (must match package.json repository.url host/path)
@@ -36,6 +36,9 @@ jobs:
 
       - name: Publish @threevl/hpo-lib
         run: npm publish -w @threevl/hpo-lib --access public
+
+      - name: Publish @threevl/hpo-middleware
+        run: npm publish -w @threevl/hpo-middleware --access public
 
       - name: Publish @threevl/hpo-express
         run: npm publish -w @threevl/hpo-express --access public

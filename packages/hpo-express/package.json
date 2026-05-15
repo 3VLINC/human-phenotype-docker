@@ -21,7 +21,7 @@
     "dev": "vite build --watch"
   },
   "dependencies": {
-    "@threevl/hpo-lib": "^0.0.2"
+    "@threevl/hpo-middleware": "^0.0.2"
   },
   "peerDependencies": {
     "express": "^4.21.0",
